@@ -22,11 +22,9 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 
-import java.awt.event.TextEvent;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -196,6 +194,7 @@ public class Client extends Application{
 	private void updateScreen(Item item){
 		currentBid.setText(String.valueOf(item.getCurrentBid()));
 		currentWinner.setText(item.getOwner());
+
 	}
 	private void setWaitingForFeedback(boolean value){waitingForFeedback=value;}
 	public static void main(String[] args) {
