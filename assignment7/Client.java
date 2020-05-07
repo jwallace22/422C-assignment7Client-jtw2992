@@ -194,7 +194,7 @@ public class Client extends Application{
 	private void updateScreen(Item item){
 		currentBid.setText(String.valueOf(item.getCurrentBid()));
 		currentWinner.setText(item.getOwner());
-
+		if(!item.getOwner().equals(clientID)){feedback.setText("");}
 	}
 	private void setWaitingForFeedback(boolean value){waitingForFeedback=value;}
 	public static void main(String[] args) {
