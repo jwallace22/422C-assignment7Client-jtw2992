@@ -9,9 +9,11 @@ public class Item extends Observable implements Serializable {
     private int timeLimit;
     protected int timeRemaining;
     private boolean sold = false;
+    private String myDesciption;
     private String owner = "no bid placed";
-    public Item(String id,double min,int time){
+    public Item(String id,double min,int time,String description){
         ID = id;
+        myDesciption=description;
         timeLimit=time;
         currentBid=min;
         timeRemaining=time;
@@ -32,6 +34,7 @@ public class Item extends Observable implements Serializable {
         });
         timer.start();
     }
+    public String getDescription(){return myDesciption;}
     public String getID(){return ID;}
     public double getCurrentBid(){
         return currentBid;
