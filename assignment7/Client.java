@@ -38,6 +38,7 @@ public class Client extends Application{
 	@FXML private Label feedback;
 	@FXML private TextField bidAmountField;
 	@FXML private ChoiceBox currentItemDropdown;
+	@FXML private Label itemDescriptionLabel;
 	private static FXMLLoader loader;
 	private static String clientID;
 	private static boolean waitingForFeedback = false;
@@ -71,6 +72,7 @@ public class Client extends Application{
 			if (i.getID().equals(currentItem)) {
 				currentWinner.setText(i.getOwner());
 				currentBid.setText(String.valueOf(i.getCurrentBid()));
+				itemDescriptionLabel.setText(i.getDescription());
 			}
 		}
 	}
