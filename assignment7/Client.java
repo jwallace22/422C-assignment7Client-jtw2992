@@ -124,6 +124,9 @@ public class Client extends Application{
 			toServer = new ObjectOutputStream(socket.getOutputStream());
 
 			items = ((Auction)fromServer.readObject()).getAuctionItems();
+			for(Item i : items){
+				i.startTimer();
+			}
 			// Create a scene and place it in the stage
 			Pane startPane = new Pane();
 			startPane.setPrefSize(600, 400);
