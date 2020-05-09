@@ -47,6 +47,7 @@ public class Client extends Application{
 	private static ArrayList<Bid> newBids = new ArrayList<>();
 	private static ArrayList<Item> items = new ArrayList<>();
 	private String currentItem = null;
+	private static boolean quit = false;
 	@FXML
 	public void placeBid(){
 		if(currentItem==null){return;}
@@ -117,20 +118,83 @@ public class Client extends Application{
 		try {
 			// Create a socket to connect to the server
 			@SuppressWarnings("resource")
-			Socket socket = new Socket("192.168.1.125", 5000);
+			Socket socket = new Socket("localhost",5000);//"192.168.1.125", 5000);
 			// Create an input stream to receive data from the server
 			fromServer = new ObjectInputStream(socket.getInputStream());
 			// Create an output stream to send data to the server
 			toServer = new ObjectOutputStream(socket.getOutputStream());
-
 			items = ((Auction)fromServer.readObject()).getAuctionItems();
 			for(Item i : items){
 				i.startTimer();
 			}
+			// reading and writing threads, to be started upon successful login
+			Thread writerThread = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						while (!quit) {
+							if (Client.newBids.size() > 0) {
+								System.out.println("sending...");
+								toServer.writeObject(Client.newBids.remove(0));
+								toServer.flush();
+								Thread.sleep(1000);
+							}
+						}
+						toServer.writeObject(clientID + " exit");
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+
+				}
+			});
+			Thread readerThread = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					Object input;
+					while (true) {
+						try {
+							input = fromServer.readObject();
+							if (input.equals(clientID + " success")) {
+								successfulBid = true;
+								setWaitingForFeedback(false);
+							} else if (input.equals(clientID + " failed")) {
+								successfulBid = false;
+								setWaitingForFeedback(false);
+							} else if(input.equals(clientID+" stl")){
+								System.exit(2);
+							}else {
+								if(input instanceof Bid) {
+									Bid newBid = (Bid) input;
+									for (Item i : items) {
+										if (newBid.getItemID().equals(i.ID)) {
+											i.setCurrentBid(newBid.getBid());
+											i.setOwner(newBid.getClientID());
+											Platform.runLater(new Runnable(){
+												@Override
+												public void run(){
+													((Client)loader.getController()).updateScreen(i);
+												}
+											});
+											//System.out.println(i.getCurrentBid());
+										}
+									}
+								}
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			});
 			// Create a scene and place it in the stage
 			Pane startPane = new Pane();
 			startPane.setPrefSize(600, 400);
 			Button startButton = new Button("Login");
+			Label loginFeedback = new Label("");
+			loginFeedback.setLayoutX(77);
+			loginFeedback.setLayoutY(10);
 			startButton.setLayoutX(77);
 			startButton.setLayoutY(150);
 			startButton.setTextAlignment(TextAlignment.CENTER);
@@ -143,21 +207,31 @@ public class Client extends Application{
 			password.setLayoutY(100);
 			startButton.setOnAction(event -> {
 				try {
-					clientID=username.getText();
-					loader=new FXMLLoader();
-					loader.setLocation(getClass().getResource("clientWindow.fxml"));
-					primaryStage.setScene(new Scene(loader.load(),1200,600)); // Place the scene in the stage
-					ObservableList<String> options = FXCollections.observableArrayList();
-					for(Item i:items){
-						options.add(i.getID());
+					toServer.writeObject(new String(username.getText()+" "+password.getText()));
+					String response = (String) fromServer.readObject();
+					if(response.equals("Login success")) {
+						clientID = username.getText();
+						loader = new FXMLLoader();
+						loader.setLocation(getClass().getResource("clientWindow.fxml"));
+						primaryStage.setScene(new Scene(loader.load(), 1200, 600)); // Place the scene in the stage
+						ObservableList<String> options = FXCollections.observableArrayList();
+						for (Item i : items) {
+							options.add(i.getID());
+						}
+						((Client) loader.getController()).setDropdown(options);
+						writerThread.start();
+						readerThread.start();
 					}
-					((Client)loader.getController()).setDropdown(options);
-				} catch (IOException e) {
+					else {
+						loginFeedback.setText("Invalid Login. Try again!");
+					}
+				} catch (IOException | ClassNotFoundException e) {
 					e.printStackTrace();
 				}
 			});
 			startPane.getChildren().add(username);
 			startPane.getChildren().add(password);
+			startPane.getChildren().add(loginFeedback);
 			startPane.getChildren().add(startButton);
 			primaryStage.setScene(new Scene(startPane, 300,200));
 			primaryStage.setTitle("Client"); // Set the stage title
@@ -166,68 +240,12 @@ public class Client extends Application{
 		catch (IOException | ClassNotFoundException ex) {
 			ex.printStackTrace();
 		}
-		Thread writerThread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				while(true){
-					if(Client.newBids.size()>0){
-						try {
-							System.out.println("sending...");
-							toServer.writeObject(Client.newBids.remove(0));
-							toServer.flush();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		});
-		Thread readerThread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				Object input;
-				while (true) {
-					try {
-						input = fromServer.readObject();
-						//System.out.println("From server: " + input);
-						if (input.equals(clientID+" success")) {
-							successfulBid=true;
-							setWaitingForFeedback(false);
-						} else if(input.equals(clientID+" failed")){
-							successfulBid=false;
-							setWaitingForFeedback(false);
-						} else {
-							if(input instanceof Bid) {
-								Bid newBid = (Bid) input;
-								for (Item i : items) {
-									if (newBid.getItemID().equals(i.ID)) {
-										i.setCurrentBid(newBid.getBid());
-										i.setOwner(newBid.getClientID());
-										Platform.runLater(new Runnable(){
-											@Override
-											public void run(){
-											((Client)loader.getController()).updateScreen(i);
-											}
-										});
-										//System.out.println(i.getCurrentBid());
-									}
-								}
-							}
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		});
-		writerThread.start();
-		readerThread.start();
 
+
+
+	}
+	public void logout(){
+		quit = true;
 	}
 	public void setDropdown(ObservableList e){
 		currentItemDropdown.getItems().addAll(e);

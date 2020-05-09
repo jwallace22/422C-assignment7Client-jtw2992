@@ -22,6 +22,7 @@
             <Label fx:id="itemDescriptionLabel" layoutX="53.0" layoutY="49.0" prefHeight="178.0" prefWidth="243.0" text="Item Description" textAlignment="CENTER" wrapText="true" />
             <Label layoutX="331.0" layoutY="17.0" text="Time Remaining" />
             <Label fx:id="timeRemainingLabel" layoutX="421.0" layoutY="17.0" prefHeight="17.0" prefWidth="73.0" text="0:00" />
+            <Button layoutX="489.0" layoutY="287.0" mnemonicParsing="false" onAction="#logout" prefHeight="18.0" prefWidth="68.0" text="Logout" />
       </children>
     </AnchorPane>
   </children>

@@ -54,7 +54,7 @@ public class Item extends Observable implements Serializable {
     }
     public void setCurrentBid(Double newBid){currentBid=newBid;}
     public void setOwner(String winner){owner=winner;}
-    public boolean placeBid(Bid newBid){
+    public synchronized boolean placeBid(Bid newBid){
         if(sold){return false;}
         if(newBid.getBid() <= currentBid){return false;}
         else{
