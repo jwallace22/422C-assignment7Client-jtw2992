@@ -16,24 +16,24 @@ public class Item extends Observable implements Serializable {
         myDesciption=description;
         timeLimit=time;
         currentBid=min;
-        timeRemaining=time;
         Thread timer = new Thread(new Runnable() {
             @Override
             public void run() {
+                int timeRemaining=time;
                 while(timeRemaining>0){
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    timeRemaining--;
-                    //System.out.println(timeRemaining);//debugging statement for time
+                    setTimeRemaining(timeRemaining--);
                 }
                 sold = true;
             }
         });
         timer.start();
     }
+    private void setTimeRemaining(int time){timeRemaining=time;}
     public String getDescription(){return myDesciption;}
     public String getID(){return ID;}
     public double getCurrentBid(){
@@ -42,8 +42,8 @@ public class Item extends Observable implements Serializable {
     public String getOwner(){
         return owner;
     }
-    public int getTimeLimit() {
-        return timeLimit;
+    public int getTimeRemaining() {
+        return timeRemaining;
     }
     public boolean isSold() {
         return sold;
@@ -59,7 +59,4 @@ public class Item extends Observable implements Serializable {
             return true;
         }
     }
-
-
-
 }

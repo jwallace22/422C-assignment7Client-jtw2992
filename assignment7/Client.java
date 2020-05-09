@@ -39,6 +39,7 @@ public class Client extends Application{
 	@FXML private TextField bidAmountField;
 	@FXML private ChoiceBox currentItemDropdown;
 	@FXML private Label itemDescriptionLabel;
+	@FXML private Label timeRemainingLabel;
 	private static FXMLLoader loader;
 	private static String clientID;
 	private static boolean waitingForFeedback = false;
@@ -59,6 +60,7 @@ public class Client extends Application{
 				feedback.setText("Bid placed. You are the current winner!");
 			}
 			else {feedback.setText("Invalid Bid. Please try again!");}
+			successfulBid=false;
 		}
 		catch(Exception e){
 			e.printStackTrace();
@@ -73,8 +75,42 @@ public class Client extends Application{
 				currentWinner.setText(i.getOwner());
 				currentBid.setText(String.valueOf(i.getCurrentBid()));
 				itemDescriptionLabel.setText(i.getDescription());
+				if(i.isSold()){itemDescriptionLabel.setText("This Item has been sold to "+i.getOwner()+" for $"+i.getCurrentBid()+"! Please see our other items open for bidding!");}
+				Thread timer = new Thread(new Runnable() {
+					@Override
+					public void run() {
+						String myItem = currentItem;
+						int timeRemaining = i.getTimeRemaining();
+						while(timeRemaining>0){
+							try {
+								int minutes = timeRemaining/60;
+								String seconds;
+								if(timeRemaining%60<10){
+									seconds = "0"+String.valueOf(timeRemaining%60);
+								} else {
+									seconds = String.valueOf(timeRemaining%60);
+								}
+								Platform.runLater(new Runnable(){
+									@Override
+									public void run(){
+										((Client)loader.getController()).setTimer(new String(minutes + ":"+seconds));
+									}
+								});
+								Thread.sleep(1000);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+							timeRemaining--;
+							if(!myItem.equals(currentItem)){timeRemaining=0;}
+						}
+					}
+				});
+				timer.start();
 			}
 		}
+	}
+	public void setTimer(String value){
+		timeRemainingLabel.setText(value);
 	}
 	@Override
 	public void start(Stage primaryStage) {
