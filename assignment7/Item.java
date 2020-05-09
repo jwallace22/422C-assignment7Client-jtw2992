@@ -31,7 +31,6 @@ public class Item extends Observable implements Serializable {
                     }
                     timeRemaining--;
                     Item.this.setTimeRemaining(timeRemaining--);
-                    System.out.println(Item.this.getTimeRemaining());
                 }
                 Item.this.sold = true;
             }
@@ -61,7 +60,6 @@ public class Item extends Observable implements Serializable {
         else{
             currentBid = newBid.getBid();
             owner = newBid.getClientID();
-            System.out.println(timeRemaining);
             return true;
         }
     }
