@@ -118,7 +118,7 @@ public class Client extends Application{
 		try {
 			// Create a socket to connect to the server
 			@SuppressWarnings("resource")
-			Socket socket = new Socket("localhost",5000);//"192.168.1.125", 5000);
+			Socket socket = new Socket("192.168.1.125", 5000);//"localhost",5000);//
 			// Create an input stream to receive data from the server
 			fromServer = new ObjectInputStream(socket.getInputStream());
 			// Create an output stream to send data to the server
@@ -131,16 +131,18 @@ public class Client extends Application{
 			Thread writerThread = new Thread(new Runnable() {
 				@Override
 				public void run() {
+
 					try {
 						while (!quit) {
 							if (Client.newBids.size() > 0) {
 								System.out.println("sending...");
 								toServer.writeObject(Client.newBids.remove(0));
 								toServer.flush();
-								Thread.sleep(1000);
 							}
+							Thread.sleep(1000);
 						}
 						toServer.writeObject(clientID + " exit");
+						System.out.println("quitting");
 					} catch (IOException e) {
 						e.printStackTrace();
 					} catch (InterruptedException e) {
