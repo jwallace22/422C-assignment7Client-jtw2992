@@ -142,13 +142,12 @@ public class Client extends Application{
 							Thread.sleep(1000);
 						}
 						toServer.writeObject(clientID + " exit");
-						System.out.println("quitting");
+						toServer.flush();
 					} catch (IOException e) {
 						e.printStackTrace();
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
-
 				}
 			});
 			Thread readerThread = new Thread(new Runnable() {
