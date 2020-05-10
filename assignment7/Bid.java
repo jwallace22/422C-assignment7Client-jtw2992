@@ -1,5 +1,10 @@
 package assignment7;
-
+/**  EE422C Final Project submission by
+ * Jeffrey Wallace
+ * jtw2992
+ * 16310
+ * Spring 2020
+ */
 import java.io.Serializable;
 
 public class Bid implements Serializable {

@@ -1,9 +1,9 @@
 package assignment7;
-/*
- * Author: Vallath Nandakumar and EE 422C instructors
- * Date: April 20, 2020
- * This starter code is from the MultiThreadChat example from the lecture, and is on Canvas. 
- * It doesn't compile.
+/**  EE422C Final Project submission by
+ * Jeffrey Wallace
+ * jtw2992
+ * 16310
+ * Spring 2020
  */
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -51,6 +51,7 @@ public class Client extends Application{
 	@FXML
 	public void placeBid(){
 		if(currentItem==null){return;}
+		if(timeRemainingLabel.getText().equals("00:00")){return;}
 		feedback.setText("");
 		try{
 			Double bid = Double.valueOf(bidAmountField.getText());
@@ -104,16 +105,17 @@ public class Client extends Application{
 							timeRemaining--;
 							if(!myItem.equals(currentItem)){timeRemaining=0;}
 						}
-						Platform.runLater(new Runnable() {
-							@Override
-							public void run() {
-								itemDescriptionLabel.setText("This Item has been sold to "+i.getOwner()+" for $"+i.getCurrentBid()+"! Please see our other items open for bidding!");
-								currentWinner.setText("auction ended");
-								currentBid.setText("auction ended");
-								timeRemainingLabel.setText("00:00");
-							}
-						});
-
+						if(myItem.equals(currentItem)) {
+							Platform.runLater(new Runnable() {
+								@Override
+								public void run() {
+									itemDescriptionLabel.setText("This Item has been sold to " + i.getOwner() + " for $" + i.getCurrentBid() + "! Please see our other items open for bidding!");
+									currentWinner.setText("auction ended");
+									currentBid.setText("auction ended");
+									timeRemainingLabel.setText("00:00");
+								}
+							});
+						}
 					}
 				});
 				timer.start();
