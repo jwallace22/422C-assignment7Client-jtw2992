@@ -104,6 +104,16 @@ public class Client extends Application{
 							timeRemaining--;
 							if(!myItem.equals(currentItem)){timeRemaining=0;}
 						}
+						Platform.runLater(new Runnable() {
+							@Override
+							public void run() {
+								itemDescriptionLabel.setText("This Item has been sold to "+i.getOwner()+" for $"+i.getCurrentBid()+"! Please see our other items open for bidding!");
+								currentWinner.setText("auction ended");
+								currentBid.setText("auction ended");
+								timeRemainingLabel.setText("00:00");
+							}
+						});
+
 					}
 				});
 				timer.start();
