@@ -57,7 +57,7 @@ public class Client extends Application{
 			Double bid = Double.valueOf(bidAmountField.getText());
 			newBids.add(new Bid(clientID,bid,currentItem));
 			waitingForFeedback=true;
-			while(waitingForFeedback){Thread.sleep(100);}
+			while(waitingForFeedback){Thread.sleep(1000);}
 			if(successfulBid){
 				feedback.setText("Bid placed. You are the current winner!");
 			}
@@ -149,7 +149,7 @@ public class Client extends Application{
 					try {
 						while (!quit) {
 							if (Client.newBids.size() > 0) {
-								System.out.println("sending...");
+								System.out.println("sending..."+newBids.get(0).getBid());
 								toServer.writeObject(Client.newBids.remove(0));
 								toServer.flush();
 							}
@@ -187,7 +187,7 @@ public class Client extends Application{
 									if (newBid.getItemID().equals(i.ID)) {
 										i.setCurrentBid(newBid.getBid());
 										i.setOwner(newBid.getClientID());
-										if(i.getID().equals(currentItem)) {
+										if(newBid.getItemID().equals(currentItem)) {
 											Platform.runLater(new Runnable() {
 												@Override
 												public void run() {
