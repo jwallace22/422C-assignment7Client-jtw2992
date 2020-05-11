@@ -31,7 +31,7 @@ import java.util.ArrayList;
 
 public class Client extends Application{
 	// I/O streams 
-	ObjectOutputStream toServer = null; 
+	ObjectOutputStream toServer = null;
 	ObjectInputStream fromServer = null;
 	@FXML private Label currentBid;
 	@FXML private Label currentWinner;
@@ -171,32 +171,33 @@ public class Client extends Application{
 					while (true) {
 						try {
 							input = fromServer.readObject();
-							if (input.equals(clientID + " success")) {
-								successfulBid = true;
-								setWaitingForFeedback(false);
-							} else if (input.equals(clientID + " failed")) {
-								successfulBid = false;
-								setWaitingForFeedback(false);
-							} else if(input.equals(clientID+" stl")){
-								System.exit(2);
-							}else {
-								if(input instanceof Bid) {
-									Bid newBid = (Bid) input;
-									for (Item i : items) {
-										if (newBid.getItemID().equals(i.ID)) {
-											i.setCurrentBid(newBid.getBid());
-											i.setOwner(newBid.getClientID());
-											Platform.runLater(new Runnable(){
-												@Override
-												public void run(){
-													((Client)loader.getController()).updateScreen(i);
-												}
-											});
-											//System.out.println(i.getCurrentBid());
-										}
+							if(input instanceof String){
+								if (input.equals(clientID + " success")) {
+									successfulBid = true;
+									setWaitingForFeedback(false);
+								} else if (input.equals(clientID + " failed")) {
+									successfulBid = false;
+									setWaitingForFeedback(false);
+								} else if(input.equals(clientID+" stl")){
+									System.exit(2);
+								}
+							}else if(input instanceof Bid) {
+								Bid newBid = (Bid) input;
+								for (Item i : items) {
+									if (newBid.getItemID().equals(i.ID)) {
+										i.setCurrentBid(newBid.getBid());
+										i.setOwner(newBid.getClientID());
+										Platform.runLater(new Runnable(){
+											@Override
+											public void run(){
+												((Client)loader.getController()).updateScreen(i);
+											}
+										});
+										//System.out.println(i.getCurrentBid());
 									}
 								}
 							}
+
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -205,7 +206,7 @@ public class Client extends Application{
 			});
 			// Create a scene and place it in the stage
 			Pane startPane = new Pane();
-			startPane.setPrefSize(600, 400);
+			startPane.setPrefSize(300, 200);
 			Button startButton = new Button("Login");
 			Label loginFeedback = new Label("");
 			loginFeedback.setLayoutX(77);
@@ -227,6 +228,7 @@ public class Client extends Application{
 					boolean waiting = true;
 					while(waiting){
 						response = fromServer.readObject();
+						System.out.println(response);
 						if((response instanceof String)&&((String) response).split(" ")[0].equals("Login")){
 							waiting=false;
 						}
@@ -244,7 +246,7 @@ public class Client extends Application{
 						writerThread.start();
 						readerThread.start();
 					}
-					else {
+					else if(((String)response).equals("Login failed")){
 						loginFeedback.setText("Invalid Login. Try again!");
 					}
 				} catch (IOException | ClassNotFoundException e) {
