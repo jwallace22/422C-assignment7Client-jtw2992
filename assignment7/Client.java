@@ -130,7 +130,11 @@ public class Client extends Application{
 		try {
 			// Create a socket to connect to the server
 			@SuppressWarnings("resource")
-			Socket socket = new Socket("192.168.1.125", 5000);//"localhost",5000);//
+
+			/**  Hard coded IP address. Change as needed!	**/
+			Socket socket = new Socket("192.168.1.125", 5000);
+
+
 			// Create an input stream to receive data from the server
 			fromServer = new ObjectInputStream(socket.getInputStream());
 			// Create an output stream to send data to the server
@@ -149,7 +153,7 @@ public class Client extends Application{
 					try {
 						while (!quit) {
 							if (Client.newBids.size() > 0) {
-								System.out.println("sending..."+newBids.get(0).getBid());
+								System.out.println("sending...");
 								toServer.writeObject(Client.newBids.remove(0));
 								toServer.flush();
 							}
@@ -179,6 +183,8 @@ public class Client extends Application{
 									successfulBid = false;
 									setWaitingForFeedback(false);
 								} else if(input.equals(clientID+" stl")){
+									toServer.close();
+									fromServer.close();
 									System.exit(2);
 								}
 							}else if(input instanceof Bid) {
@@ -238,7 +244,7 @@ public class Client extends Application{
 						clientID = username.getText();
 						loader = new FXMLLoader();
 						loader.setLocation(getClass().getResource("clientWindow.fxml"));
-						primaryStage.setScene(new Scene(loader.load(), 1200, 600)); // Place the scene in the stage
+						primaryStage.setScene(new Scene(loader.load(), 600, 350)); // Place the scene in the stage
 						ObservableList<String> options = FXCollections.observableArrayList();
 						for (Item i : items) {
 							options.add(i.getID());
