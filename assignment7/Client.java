@@ -220,8 +220,15 @@ public class Client extends Application{
 			password.setLayoutY(100);
 			startButton.setOnAction(event -> {
 				try {
-					toServer.writeObject(new String(username.getText()+" "+password.getText()));
-					String response = (String) fromServer.readObject();
+					toServer.writeObject(new String("login "+username.getText()+" "+password.getText()));
+					Object response = null;
+					boolean waiting = true;
+					while(waiting){
+						response = fromServer.readObject();
+						if((response instanceof String)&&((String) response).split(" ")[0].equals("Login")){
+							waiting=false;
+						}
+					}
 					if(response.equals("Login success")) {
 						clientID = username.getText();
 						loader = new FXMLLoader();
