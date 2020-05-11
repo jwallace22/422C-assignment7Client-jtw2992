@@ -135,7 +135,9 @@ public class Client extends Application{
 			fromServer = new ObjectInputStream(socket.getInputStream());
 			// Create an output stream to send data to the server
 			toServer = new ObjectOutputStream(socket.getOutputStream());
-			items = ((Auction)fromServer.readObject()).getAuctionItems();
+			Object auction = null;
+			while(!((auction=fromServer.readObject()) instanceof Auction)){}
+			items = ((Auction)auction).getAuctionItems();
 			for(Item i : items){
 				i.startTimer();
 			}
@@ -229,7 +231,6 @@ public class Client extends Application{
 							waiting=false;
 						}
 					}
-					System.out.println(response);
 					if(((String)response).equals("Login success")) {
 						clientID = username.getText();
 						loader = new FXMLLoader();
