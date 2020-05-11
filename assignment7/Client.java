@@ -153,7 +153,7 @@ public class Client extends Application{
 								toServer.writeObject(Client.newBids.remove(0));
 								toServer.flush();
 							}
-							Thread.sleep(1000);
+							Thread.sleep(100);
 						}
 						toServer.writeObject(clientID + " exit");
 						toServer.flush();
@@ -187,13 +187,14 @@ public class Client extends Application{
 									if (newBid.getItemID().equals(i.ID)) {
 										i.setCurrentBid(newBid.getBid());
 										i.setOwner(newBid.getClientID());
-										Platform.runLater(new Runnable(){
-											@Override
-											public void run(){
-												((Client)loader.getController()).updateScreen(i);
-											}
-										});
-										//System.out.println(i.getCurrentBid());
+										if(i.getID().equals(currentItem)) {
+											Platform.runLater(new Runnable() {
+												@Override
+												public void run() {
+													((Client) loader.getController()).updateScreen(i);
+												}
+											});
+										}
 									}
 								}
 							}
