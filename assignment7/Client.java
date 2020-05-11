@@ -229,7 +229,8 @@ public class Client extends Application{
 							waiting=false;
 						}
 					}
-					if(response.equals("Login success")) {
+					System.out.println(response);
+					if(((String)response).equals("Login success")) {
 						clientID = username.getText();
 						loader = new FXMLLoader();
 						loader.setLocation(getClass().getResource("clientWindow.fxml"));
