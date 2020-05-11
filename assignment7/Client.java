@@ -46,7 +46,7 @@ public class Client extends Application{
 	private static boolean successfulBid = false;
 	private static ArrayList<Bid> newBids = new ArrayList<>();
 	private static ArrayList<Item> items = new ArrayList<>();
-	private String currentItem = null;
+	private static String currentItem = null;
 	private static boolean quit = false;
 	@FXML
 	public void placeBid(){
